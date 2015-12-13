@@ -1,7 +1,6 @@
 /*jshint esnext: true */
 
 Game = {
-
   init() {
     this.game = new Phaser.Game(640, 480, Phaser.AUTO, '');
     this.game.state.add("Boot", Game.Boot);
@@ -9,7 +8,6 @@ Game = {
     this.game.state.add("Game", Game.Game);
     this.game.state.start("Boot");
   }
-
 };
 
 Game.Boot = function(){}
@@ -40,7 +38,7 @@ Game.Preload.prototype = {
     this.load.tilemap("level1", "assets/tilemaps/tiles.json", null,
       Phaser.Tilemap.TILED_JSON);
     this.load.image('gameTiles', 'assets/images/simples_pimples.png');
-    this.load.image('player', 'assets/images/player.png');
+    this.load.spritesheet('player', 'assets/images/player.png', 16, 16);
     this.load.image('door', 'assets/images/door.png');
   },
   create() {
@@ -52,13 +50,12 @@ Game.Game = function(){}
 Game.Game.prototype = {
   findObjectsByType(type, map, layer) {
     var result = [];
-    map.objects[layer].forEach((element) => {
+    return map.objects[layer].map((element) => {
       if (element.type === type) {
         element.y -= map.tileHeight;
-        result.push(element);
+        return element;
       }
     });
-    return result;
   },
 
   create() {
@@ -71,6 +68,8 @@ Game.Game.prototype = {
 
     const result = this.findObjectsByType("playerStart", this.map, "objectsLayer");
     this.player = this.game.add.sprite(result[0].x, result[0].y, "player");
+    this.player.anchor.setTo(.5, 1);
+    this.player.animations.add("walk");
     this.game.physics.arcade.enable(this.player);
     this.game.camera.follow(this.player);
 
@@ -89,9 +88,17 @@ Game.Game.prototype = {
     }
     else if (this.cursors.left.isDown) {
       this.player.body.velocity.x -= 64;
+      this.player.scale.x = -1;
     }
     else if (this.cursors.right.isDown) {
       this.player.body.velocity.x += 64;
+      this.player.scale.x = 1;
+    }
+
+    if (this.player.body.velocity.x !== 0 || this.player.body.velocity.y !== 0)
+      this.player.animations.play("walk", 12, true);
+    else {
+      this.player.animations.stop("walk", 1);
     }
 
 
