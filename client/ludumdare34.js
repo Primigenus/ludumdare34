@@ -2,7 +2,7 @@
 
 Game = {
   init() {
-    this.game = new Phaser.Game(640, 480, Phaser.AUTO, '');
+    this.game = new Phaser.Game(640, 480, Phaser.AUTO, 'game');
     this.game.state.add("Boot", Game.Boot);
     this.game.state.add("Preload", Game.Preload);
     this.game.state.add("Game", Game.Game);
@@ -10,7 +10,7 @@ Game = {
   }
 };
 
-Game.Boot = function(){}
+Game.Boot = function(){};
 Game.Boot.prototype = {
   preload() {
     this.load.image("preloadbar", "assets/images/preloader-bar.png");
@@ -25,7 +25,7 @@ Game.Boot.prototype = {
   }
 };
 
-Game.Preload = function(){}
+Game.Preload = function(){};
 Game.Preload.prototype = {
   preload() {
     this.preloadBar = this.add.sprite(this.game.world.centerX,
@@ -46,7 +46,7 @@ Game.Preload.prototype = {
   }
 };
 
-Game.Game = function(){}
+Game.Game = function(){};
 Game.Game.prototype = {
   findObjectsByType(type, map, layer) {
     var result = [];
@@ -68,7 +68,7 @@ Game.Game.prototype = {
 
     const result = this.findObjectsByType("playerStart", this.map, "objectsLayer");
     this.player = this.game.add.sprite(result[0].x, result[0].y, "player");
-    this.player.anchor.setTo(.5, 1);
+    this.player.anchor.setTo(0.5, 1);
     this.player.animations.add("walk");
     this.game.physics.arcade.enable(this.player);
     this.game.camera.follow(this.player);
@@ -77,21 +77,22 @@ Game.Game.prototype = {
   },
 
   update() {
+    const speed = 64;
     this.player.body.velocity.x = 0;
     this.player.body.velocity.y = 0;
 
     if (this.cursors.up.isDown) {
-      this.player.body.velocity.y -= 64;
+      this.player.body.velocity.y -= speed;
     }
-    else if (this.cursors.down.isDown) {
-      this.player.body.velocity.y += 64;
+    if (this.cursors.down.isDown) {
+      this.player.body.velocity.y += speed;
     }
-    else if (this.cursors.left.isDown) {
-      this.player.body.velocity.x -= 64;
+    if (this.cursors.left.isDown) {
+      this.player.body.velocity.x -= speed;
       this.player.scale.x = -1;
     }
-    else if (this.cursors.right.isDown) {
-      this.player.body.velocity.x += 64;
+    if (this.cursors.right.isDown) {
+      this.player.body.velocity.x += speed;
       this.player.scale.x = 1;
     }
 
